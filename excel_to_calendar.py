@@ -13,6 +13,10 @@ automatically creates all the individual events in my Google Calendar.
 Note: must have "credentials.json" saved in same directory. This is obtained
 from Google https://developers.google.com/workspace/guides/create-credentials
 
+If the token has expired, you will receive a RefreshError.
+Simply delete/rename 'token.json' and rerun.
+(I'm unsure why 'creds.refresh(Request())' doesn't work properly.)
+
 Some initial code for Google Calendar interface was borrowed from
 https://developers.google.com/calendar/api/quickstart/python
 https://karenapp.io/articles/how-to-automate-google-calendar-with-python-using-the-calendar-api/
@@ -94,6 +98,9 @@ def xlsx_to_df(file, sheet=None):
             df = pd.read_excel(file, sheet_name=sheet)
         else:
             df = pd.read_excel(file)
+            
+    # Remove unicode BOM that is sometimes exported from Excel.
+    df.replace(to_replace='\ufeff', value='', regex=True, inplace=True)
     return df
 
 
